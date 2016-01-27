@@ -10,7 +10,7 @@ Install with [npm](https://www.npmjs.com/):
 $ npm i base-runtimes --save
 ```
 
-This plugin is a basic wrapper for [composer-runtimes][] and [composer][], see those libraries to learn more about available features and options, or to report issues related to runtimes colors or formatting.
+This plugin is a basic wrapper for [composer-runtimes](https://github.com/doowb/composer-runtimes) and [composer](https://github.com/jonschlinkert/composer), see those libraries to learn more about available features and options, or to report issues related to runtimes colors or formatting.
 
 ## Usage
 
@@ -37,8 +37,6 @@ app.build(function(err) {
 With `runtimes` registed, you should see something like the following when `.build` is called:
 
 <img width="363" alt="output generated after adding base-runtimes plugin for composer-runtimes" src="https://cloud.githubusercontent.com/assets/383994/12613017/d2efca0c-c4c4-11e5-90ae-e140227cfab6.png">
-
-## API
 
 ## Related projects
 
