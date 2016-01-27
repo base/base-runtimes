@@ -1,7 +1,7 @@
 {
   "name": "base-runtimes",
   "description": "Plugin for adding composer-runtimes to base applications, complementing the base-tasks and base-generators plugins.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/jonschlinkert/base-runtimes",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/base-runtimes",
@@ -28,11 +28,26 @@
     "gulp-format-md": "*",
     "mocha": "^2.4.2"
   },
-  "keywords": [],
+  "keywords": [
+    "base",
+    "baseplugin",
+    "composer",
+    "diff",
+    "end",
+    "finish",
+    "generate",
+    "generator",
+    "plugin",
+    "runtimes",
+    "start",
+    "task",
+    "time"
+  ],
   "lintDeps": {
     "ignore": []
   },
   "verb": {
+    "toc": false,
     "layout": "default",
     "plugins": [
       "gulp-format-md"
@@ -46,6 +61,9 @@
         "base-tasks"
       ]
     },
-    "toc": false
+    "reflinks": [
+      "composer",
+      "composer-runtimes"
+    ]
   }
 }
