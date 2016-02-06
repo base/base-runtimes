@@ -21,9 +21,12 @@
     "test": "mocha"
   },
   "dependencies": {
+    "ansi-bold": "^0.1.1",
     "ansi-cyan": "^0.1.1",
     "ansi-green": "^0.1.1",
     "ansi-magenta": "^0.1.1",
+    "ansi-yellow": "^0.1.1",
+    "extend-shallow": "^2.0.1",
     "fancy-log": "github:jonschlinkert/fancy-log#timestamp",
     "lazy-cache": "^1.0.3",
     "success-symbol": "^0.1.0",
@@ -60,12 +63,15 @@
       "gulp-format-md"
     ],
     "related": {
+      "highlight": "base-task",
+      "description": "You might also be interested in these projects:",
       "list": [
         "base",
         "base-fs",
+        "base-generators",
         "base-pipeline",
         "base-plugins",
-        "base-tasks"
+        "base-task"
       ]
     },
     "reflinks": [
