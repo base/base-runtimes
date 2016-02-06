@@ -12,9 +12,12 @@ require = utils;
  * Lazily required module dependencies
  */
 
+require('extend-shallow', 'extend');
+require('ansi-bold', 'bold');
 require('ansi-cyan', 'cyan');
 require('ansi-green', 'green');
 require('ansi-magenta', 'magenta');
+require('ansi-yellow', 'yellow');
 require('fancy-log', 'timestamp');
 require('success-symbol', 'check');
 require('time-diff', 'Time');

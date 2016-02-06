@@ -9,29 +9,35 @@
 
 var utils = require('./utils');
 
-module.exports = function(options) {
+module.exports = function(config) {
+  config = config || {};
+
   return function(app) {
     if (this.isRegistered('base-runtimes')) return;
     var time = new utils.Time();
+    var ctor = this.constructor;
+    var runner = ctor.name.toLowerCase();
 
     this.on('starting', function(build) {
-      starting(namespace(build));
+      var val = namespace(build);
+      starting(val ? (val + ' generator') : '');
     });
 
     this.on('finished', function(build) {
-      finished(namespace(build));
+      var val = namespace(build);
+      finished(val ? (val + ' generator') : '');
     });
 
     this.on('task:starting', function(task) {
-      starting(namespace(app), name(task));
+      starting(namespace(app), name(task) + ' task');
     });
 
     this.on('task:finished', function(task) {
-      finished(namespace(app), name(task));
+      finished(namespace(app), name(task) + ' task');
     });
 
     this.once('done', function() {
-      console.error(utils.green(utils.check), 'finished');
+      utils.timestamp('finished', utils.green(utils.check));
     });
 
     function starting(namespace, name) {
@@ -46,20 +52,20 @@ module.exports = function(options) {
       utils.timestamp('finished', prefix + utils.magenta(time.end(key)));
     }
 
-    function name(app) {
-      return app.name || '';
+    function name(task) {
+      return task.name || '';
     }
 
-    function namespace(app) {
-      return app.namespace || '';
+    function namespace(build) {
+      return build.namespace || '';
     }
 
     function toKey(namespace, name) {
       if (namespace && name) {
-        return utils.cyan(namespace + ':' + name);
+        return utils.bold(utils.cyan(namespace)) + ':' + utils.yellow(name);
       }
       if (namespace) {
-        return utils.cyan(namespace);
+        return utils.bold(utils.cyan(namespace));
       }
       if (name) {
         return utils.cyan(name);
