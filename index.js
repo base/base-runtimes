@@ -14,26 +14,35 @@ module.exports = function(config) {
 
   return function(app) {
     if (this.isRegistered('base-runtimes')) return;
+
     var time = new utils.Time();
-    var ctor = this.constructor;
-    var runner = ctor.name.toLowerCase();
 
     this.on('starting', function(build) {
-      var val = namespace(build);
-      starting(val ? (val + ' generator') : '');
+      if (app.options.silent !== true) {
+        var val = namespace(build);
+        starting(val ? (val + ' generator') : '');
+      }
     });
 
     this.on('finished', function(build) {
-      var val = namespace(build);
-      finished(val ? (val + ' generator') : '');
+      if (app.options.silent !== true) {
+        var val = namespace(build);
+        finished(val ? (val + ' generator') : '');
+      }
     });
 
     this.on('task:starting', function(task) {
-      starting(namespace(app), name(task) + ' task');
+      if (app.options.silent !== true) {
+        if (task.name === 'noop') return;
+        starting(namespace(app), name(task) + ' task');
+      }
     });
 
     this.on('task:finished', function(task) {
-      finished(namespace(app), name(task) + ' task');
+      if (app.options.silent !== true) {
+        if (task.name === 'noop') return;
+        finished(namespace(app), name(task) + ' task');
+      }
     });
 
     this.once('done', function() {
@@ -57,20 +66,31 @@ module.exports = function(config) {
     }
 
     function namespace(build) {
-      return build.namespace || '';
+      return build.namespace;
     }
 
     function toKey(namespace, name) {
-      if (namespace && name) {
-        return utils.bold(utils.cyan(namespace)) + ':' + utils.yellow(name);
-      }
+      var res = '';
       if (namespace) {
-        return utils.bold(utils.cyan(namespace));
+        namespace = stripDefault(namespace);
       }
-      if (name) {
-        return utils.cyan(name);
+      if (namespace && name) {
+        res = utils.bold(utils.cyan(namespace)) + ':' + utils.yellow(name);
+
+      } else if (namespace) {
+        res = utils.bold(utils.cyan(namespace));
+
+      } else if (name) {
+        res = utils.cyan(name);
       }
-      return '';
+      return res;
     }
   };
 };
+
+function stripDefault(name) {
+  if (name.indexOf('default.') === 0) {
+    return name.slice('default.'.length);
+  }
+  return name;
+}
