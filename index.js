@@ -18,28 +18,28 @@ module.exports = function(config) {
     var time = new utils.Time();
 
     this.on('starting', function(build) {
-      if (app.options.silent !== true) {
+      if (!silent(build)) {
         var val = namespace(build);
         starting(val ? (val + ' generator') : '');
       }
     });
 
     this.on('finished', function(build) {
-      if (app.options.silent !== true) {
+      if (!silent(build)) {
         var val = namespace(build);
         finished(val ? (val + ' generator') : '');
       }
     });
 
     this.on('task:starting', function(task) {
-      if (app.options.silent !== true) {
+      if (!silent(app, task)) {
         if (task.name === 'noop') return;
         starting(namespace(app), name(task) + ' task');
       }
     });
 
     this.on('task:finished', function(task) {
-      if (app.options.silent !== true) {
+      if (!silent(app, task)) {
         if (task.name === 'noop') return;
         finished(namespace(app), name(task) + ' task');
       }
@@ -48,6 +48,15 @@ module.exports = function(config) {
     this.once('done', function() {
       utils.timestamp('finished', utils.green(utils.check));
     });
+
+    function silent(app, task) {
+      if (app.options.silent === true) {
+        return true;
+      }
+      if (task && task.options.silent === true) {
+        return true;
+      }
+    }
 
     function starting(namespace, name) {
       var key = toKey(namespace, name);
