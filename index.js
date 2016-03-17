@@ -12,9 +12,8 @@ var utils = require('./utils');
 module.exports = function(config) {
   config = config || {};
 
-  return function(app) {
-    if (this.isRegistered('base-runtimes')) return;
-
+  return function plugin(app) {
+    if (!isValidInstance(app)) return;
     var time = new utils.Time();
 
     this.on('starting', function(build) {
@@ -94,6 +93,8 @@ module.exports = function(config) {
       }
       return res;
     }
+
+    return plugin;
   };
 };
 
@@ -102,4 +103,18 @@ function stripDefault(name) {
     return name.slice('default.'.length);
   }
   return name;
+}
+
+function isValidInstance(app) {
+  if (app.isRegistered('base-runtimes')) {
+    return false;
+  }
+  if (app.isCollection || app.isView) {
+    return false;
+  }
+  var fn = app.options.validatePlugin;
+  if (typeof fn === 'function') {
+    return fn(app);
+  }
+  return true;
 }
