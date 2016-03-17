@@ -27,7 +27,7 @@
     "ansi-magenta": "^0.1.1",
     "ansi-yellow": "^0.1.1",
     "extend-shallow": "^2.0.1",
-    "fancy-log": "github:jonschlinkert/fancy-log#timestamp",
+    "fancy-log": "^1.2.0",
     "lazy-cache": "^1.0.3",
     "success-symbol": "^0.1.0",
     "time-diff": "^0.1.0"
@@ -57,8 +57,12 @@
     "ignore": []
   },
   "verb": {
+    "run": true,
     "toc": false,
     "layout": "default",
+    "tasks": [
+      "readme"
+    ],
     "plugins": [
       "gulp-format-md"
     ],
@@ -76,7 +80,11 @@
     },
     "reflinks": [
       "composer",
-      "composer-runtimes"
-    ]
+      "composer-runtimes",
+      "verb"
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }
