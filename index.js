@@ -12,7 +12,7 @@ var utils = require('./utils');
 module.exports = function(config) {
   config = config || {};
 
-  return function plugin(app) {
+  return function baseRuntimes(app) {
     if (!isValidInstance(app)) return;
     var time = new utils.Time();
 
@@ -94,7 +94,7 @@ module.exports = function(config) {
       return res;
     }
 
-    return plugin;
+    return baseRuntimes;
   };
 };
 
