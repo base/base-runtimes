@@ -13,15 +13,25 @@ require = utils;
  */
 
 require('extend-shallow', 'extend');
-require('ansi-bold', 'bold');
-require('ansi-cyan', 'cyan');
-require('ansi-green', 'green');
-require('ansi-magenta', 'magenta');
-require('ansi-yellow', 'yellow');
-require('fancy-log', 'timestamp');
-require('success-symbol', 'check');
+require('log-utils', 'log');
 require('time-diff', 'Time');
 require = fn;
+
+/**
+ * Expose `colors` from log-utils
+ */
+
+utils.colors = utils.log.colors;
+
+/**
+ * Formatted timestamp
+ */
+
+utils.timestamp = function() {
+  var args = [].slice.call(arguments);
+  args.unshift(utils.log.timestamp);
+  console.error.apply(console, args);
+};
 
 /**
  * Expose `utils` modules

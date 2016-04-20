@@ -3,7 +3,7 @@
 require('mocha');
 var assert = require('assert');
 var runtimes = require('./');
-var task = require('base-tasks');
+var task = require('base-task');
 var Base = require('base');
 var base;
 
@@ -44,6 +44,30 @@ describe('base-runtimes', function() {
     // run the `default` task
     base.build('default', function(err) {
       if (err) throw err;
+      cb();
+    });
+  });
+
+  it('should log `finished`', function(cb) {
+    var error = console.error;
+    var count = 0;
+
+    console.error = function(time, msg) {
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build('default', function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(count, 5);
       cb();
     });
   });

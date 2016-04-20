@@ -21,22 +21,16 @@
     "test": "mocha"
   },
   "dependencies": {
-    "ansi-bold": "^0.1.1",
-    "ansi-cyan": "^0.1.1",
-    "ansi-green": "^0.1.1",
-    "ansi-magenta": "^0.1.1",
-    "ansi-yellow": "^0.1.1",
     "extend-shallow": "^2.0.1",
-    "fancy-log": "^1.2.0",
     "lazy-cache": "^1.0.3",
-    "success-symbol": "^0.1.0",
+    "log-utils": "^0.1.0",
     "time-diff": "^0.1.0"
   },
   "devDependencies": {
-    "base": "^0.6.7",
-    "base-tasks": "^0.3.0",
-    "gulp-format-md": "*",
-    "mocha": "^2.4.2"
+    "base": "^0.8.1",
+    "base-task": "^0.4.3",
+    "gulp-format-md": "^0.1.8",
+    "mocha": "^2.4.5"
   },
   "keywords": [
     "base",

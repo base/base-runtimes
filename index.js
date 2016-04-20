@@ -45,17 +45,8 @@ module.exports = function(config) {
     });
 
     this.once('done', function() {
-      utils.timestamp('finished', utils.green(utils.check));
+      utils.timestamp('finished', utils.log.success);
     });
-
-    function silent(app, task) {
-      if (app.options.silent === true) {
-        return true;
-      }
-      if (task && task.options.silent === true) {
-        return true;
-      }
-    }
 
     function starting(namespace, name) {
       var key = toKey(namespace, name);
@@ -66,7 +57,16 @@ module.exports = function(config) {
     function finished(namespace, name) {
       var key = toKey(namespace, name);
       var prefix = key ? key + ' ' : '';
-      utils.timestamp('finished', prefix + utils.magenta(time.end(key)));
+      utils.timestamp('finished', prefix + utils.colors.magenta(time.end(key)));
+    }
+
+    function silent(app, task) {
+      if (app.options.silent === true) {
+        return true;
+      }
+      if (task && task.options.silent === true) {
+        return true;
+      }
     }
 
     function name(task) {
@@ -83,13 +83,13 @@ module.exports = function(config) {
         namespace = stripDefault(namespace);
       }
       if (namespace && name) {
-        res = utils.bold(utils.cyan(namespace)) + ':' + utils.yellow(name);
+        res = utils.bold(utils.colors.cyan(namespace)) + ':' + utils.colors.yellow(name);
 
       } else if (namespace) {
-        res = utils.bold(utils.cyan(namespace));
+        res = utils.bold(utils.colors.cyan(namespace));
 
       } else if (name) {
-        res = utils.cyan(name);
+        res = utils.colors.cyan(name);
       }
       return res;
     }
