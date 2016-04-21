@@ -83,10 +83,10 @@ module.exports = function(config) {
         namespace = stripDefault(namespace);
       }
       if (namespace && name) {
-        res = utils.bold(utils.colors.cyan(namespace)) + ':' + utils.colors.yellow(name);
+        res = utils.colors.bold(utils.colors.cyan(namespace)) + ':' + utils.colors.yellow(name);
 
       } else if (namespace) {
-        res = utils.bold(utils.colors.cyan(namespace));
+        res = utils.colors.bold(utils.colors.cyan(namespace));
 
       } else if (name) {
         res = utils.colors.cyan(name);
