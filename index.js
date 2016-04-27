@@ -18,15 +18,13 @@ module.exports = function(config) {
 
     this.on('starting', function(build) {
       if (!silent(build)) {
-        var val = namespace(build);
-        starting(val ? (val + ' generator') : '');
+        starting(namespace(build));
       }
     });
 
     this.on('finished', function(build) {
       if (!silent(build)) {
-        var val = namespace(build);
-        finished(val ? (val + ' generator') : '');
+        finished(namespace(build));
       }
     });
 
