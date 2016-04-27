@@ -74,7 +74,7 @@ module.exports = function(config) {
     }
 
     function namespace(build) {
-      return build.namespace;
+      return build.env ? build.env.name : build.namespace;
     }
 
     function toKey(namespace, name) {
