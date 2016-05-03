@@ -17,26 +17,26 @@ module.exports = function(config) {
     var time = new utils.Time();
 
     this.on('starting', function(build) {
-      if (!silent(build)) {
+      if (!silent(app, build, null)) {
         starting(namespace(build));
       }
     });
 
     this.on('finished', function(build) {
-      if (!silent(build)) {
+      if (!silent(app, build, null)) {
         finished(namespace(build));
       }
     });
 
     this.on('task:starting', function(task) {
-      if (!silent(app, task)) {
+      if (!silent(app, null, task)) {
         if (task.name === 'noop') return;
         starting(namespace(app), name(task) + ' task');
       }
     });
 
     this.on('task:finished', function(task) {
-      if (!silent(app, task)) {
+      if (!silent(app, null, task)) {
         if (task.name === 'noop') return;
         finished(namespace(app), name(task) + ' task');
       }
@@ -58,7 +58,16 @@ module.exports = function(config) {
       utils.timestamp('finished', prefix + utils.colors.magenta(time.end(key)));
     }
 
-    function silent(app, task) {
+    function silent(app, build, task) {
+      if (app.options.verbose === true) {
+        return false;
+      }
+      if (task && app.options.verbose === 'tasks') {
+        return false;
+      }
+      if (build && app.options.verbose === 'build') {
+        return false;
+      }
       if (app.options.silent === true) {
         return true;
       }

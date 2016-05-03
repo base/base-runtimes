@@ -36,7 +36,7 @@ describe('base-runtimes', function() {
     assert.equal(count, 1);
   });
 
-  it('should display runtimes', function(cb) {
+  it('should display runtimes for tasks', function(cb) {
     base.task('default', function(cb) {
       cb();
     });
@@ -48,11 +48,13 @@ describe('base-runtimes', function() {
     });
   });
 
-  it('should log `finished`', function(cb) {
+  it('should log `starting` for a build', function(cb) {
     var error = console.error;
     var count = 0;
+    var msgs = [];
 
     console.error = function(time, msg) {
+      msgs.push(msg);
       count++;
     };
 
@@ -64,9 +66,170 @@ describe('base-runtimes', function() {
     });
 
     // run the `default` task
-    base.build('default', function(err) {
+    base.build(function(err) {
       if (err) throw err;
       base.emit('done');
+      assert.equal(msgs[0], 'starting');
+      assert.equal(count, 5);
+      cb();
+    });
+  });
+
+  it('should log `starting` for a task', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(msgs[1], 'starting');
+      assert.equal(count, 5);
+      cb();
+    });
+  });
+
+  it('should not log for a task when `silent` is true', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', {silent: true}, function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(['default'], function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(count, 3);
+      cb();
+    });
+  });
+
+  it('should override `silent` when `verbose` is true', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base({}, {verbose: true});
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', {silent: true}, function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(['default'], function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(count, 5);
+      cb();
+    });
+  });
+
+  it('should log `finished` for a task', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(msgs[2], 'finished');
+      assert.equal(count, 5);
+      cb();
+    });
+  });
+
+  it('should log `finished` for a build', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(msgs[3], 'finished');
+      assert.equal(count, 5);
+      cb();
+    });
+  });
+
+  it('should log `finished` when `done` is emitted', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', function(next) {
+      next();
+    });
+
+    // run the `default` task
+    base.build(function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(msgs[4], 'finished');
       assert.equal(count, 5);
       cb();
     });
