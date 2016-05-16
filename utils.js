@@ -9,6 +9,8 @@ require = utils;
  */
 
 require('extend-shallow', 'extend');
+require('is-registered');
+require('is-valid-instance', 'isValid');
 require('log-utils', 'log');
 require('time-diff', 'Time');
 require = fn;

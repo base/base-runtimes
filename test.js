@@ -10,6 +10,7 @@ var base;
 describe('base-runtimes', function() {
   beforeEach(function() {
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
   });
@@ -25,6 +26,7 @@ describe('base-runtimes', function() {
   it('should not register the plugin more than once', function() {
     var count = 0;
     base = new Base();
+    base.isApp = true;
     base.on('plugin', function() {
       count++;
     });
@@ -59,6 +61,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', function(next) {
@@ -86,6 +89,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', function(next) {
@@ -113,6 +117,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', {silent: true}, function(next) {
@@ -139,6 +144,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base({}, {verbose: true});
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', {silent: true}, function(next) {
@@ -165,6 +171,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', function(next) {
@@ -192,6 +199,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', function(next) {
@@ -219,6 +227,7 @@ describe('base-runtimes', function() {
     };
 
     base = new Base();
+    base.isApp = true;
     base.use(task());
     base.use(runtimes());
     base.task('default', function(next) {

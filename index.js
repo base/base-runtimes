@@ -81,7 +81,7 @@ module.exports = function(config) {
     }
 
     function namespace(build) {
-      return build.env ? build.env.name : build.namespace;
+      return build.env ? build.env.namespace : build.namespace;
     }
 
     function toKey(namespace, name) {
@@ -112,16 +112,12 @@ function stripDefault(name) {
   return name;
 }
 
-function isValidInstance(app) {
-  if (app.isRegistered('base-runtimes')) {
+function isValidInstance(app, fn) {
+  if (!utils.isValid(app)) {
     return false;
   }
-  if (app.isCollection || app.isView) {
+  if (utils.isRegistered(app, 'base-runtimes', fn)) {
     return false;
-  }
-  var fn = app.options.validatePlugin;
-  if (typeof fn === 'function') {
-    return fn(app);
   }
   return true;
 }
