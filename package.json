@@ -89,7 +89,8 @@
     "reflinks": [
       "composer",
       "composer-runtimes",
-      "verb"
+      "verb",
+      "verb-readme-generator"
     ],
     "lint": {
       "reflinks": true
