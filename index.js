@@ -13,65 +13,126 @@ module.exports = function(config) {
   config = config || {};
 
   return function baseRuntimes(app) {
-    if (!isValidInstance(app)) return;
+    if (!utils.isValid(app, 'base-runtimes')) return;
     var time = new utils.Time();
+    var log = utils.log;
 
     this.on('starting', function(build) {
-      if (!silent(app, build, null)) {
-        starting(namespace(build));
+      // create build context
+      var ctx = {app: build};
+      ctx.key = toKey(namespace(build));
+      ctx.event = 'starting';
+      time.start(ctx.key);
+      ctx.time = '';
+      ctx.isBuild = true;
+      ctx.isSilent = silent(app, build, null);
+
+      if (app.hasListeners('build')) {
+        app.emit('build', ctx.event, ctx);
+      } else if (app.base.hasListeners('build')) {
+        app.base.emit('build', ctx.event, ctx);
+      } else if (!ctx.isSilent) {
+        console.error(log.timestamp, ctx.event, ctx.key, log.red(ctx.time));
       }
     });
 
-    this.on('finished', function(build) {
-      if (!silent(app, build, null)) {
-        finished(namespace(build));
+    this.on('finished', function(build, run) {
+      // create build context
+      var ctx = {app: build};
+      ctx.key = toKey(namespace(build));
+      ctx.time = time.end(ctx.key);
+      ctx.event = 'finished';
+      ctx.isBuild = true;
+      ctx.isSilent = silent(app, build, null);
+
+      if (app.hasListeners('build')) {
+        app.emit('build', ctx.event, ctx);
+      } else if (app.base.hasListeners('build')) {
+        app.base.emit('build', ctx.event, ctx);
+      } else if (!ctx.isSilent) {
+        console.error(log.timestamp, ctx.event, ctx.key, log.red(ctx.time));
       }
     });
 
     this.on('task:starting', function(task) {
-      if (!silent(app, null, task)) {
-        if (task.name === 'noop') return;
-        starting(namespace(app), name(task) + ' task');
+      task.key = toKey(namespace(app), name(task) + ' task');
+      time.start('task:' + task.key);
+      task.event = 'starting';
+      task.time = '';
+      task.isTask = true;
+      task.isSilent = silent(app, null, task);
+
+      if (app.hasListeners('task')) {
+        app.emit('task', task.event, task);
+      } else if (app.base.hasListeners('task')) {
+        app.base.emit('task', task.event, task);
+      } else if (!task.isSilent) {
+        console.error(log.timestamp, task.event, task.key, log.red(task.time));
       }
     });
 
     this.on('task:finished', function(task) {
-      if (!silent(app, null, task)) {
-        if (task.name === 'noop') return;
-        finished(namespace(app), name(task) + ' task');
+      task.key = toKey(namespace(app), name(task) + ' task');
+      task.time = time.end('task:' + task.key);
+      task.event = 'finished';
+      task.isTask = true;
+      task.isSilent = silent(app, null, task);
+
+      if (app.hasListeners('task')) {
+        app.emit('task', task.event, task);
+      } else if (app.base.hasListeners('task')) {
+        app.base.emit('task', task.event, task);
+      } else if (!task.isSilent) {
+        console.error(log.timestamp, task.event, task.key, log.red(task.time));
       }
     });
 
-    this.once('done', function() {
-      utils.timestamp('finished', utils.log.success);
-    });
-
-    function starting(namespace, name) {
-      var key = toKey(namespace, name);
-      time.start(key);
-      utils.timestamp('starting', key);
-    }
-
-    function finished(namespace, name) {
-      var key = toKey(namespace, name);
-      var prefix = key ? key + ' ' : '';
-      utils.timestamp('finished', prefix + utils.colors.magenta(time.end(key)));
-    }
+    /**
+     * Handle toggling of verbose and silent modes
+     */
 
     function silent(app, build, task) {
-      if (app.options.verbose === true) {
+      var opts = utils.extend({}, app.base.options, app.options);
+
+      if (build && build.options) {
+        opts = utils.extend({}, opts, build.options);
+      }
+      if (task && task.options) {
+        opts = utils.extend({}, opts, task.options);
+      }
+
+      var verbose = opts.verbose;
+      var silent = opts.silent;
+
+      // handle `verbose` first
+      if (typeof verbose === 'function') {
+        return verbose(app, build, task);
+      }
+      if (verbose === true) {
         return false;
       }
-      if (task && app.options.verbose === 'tasks') {
+      if (task && verbose === 'tasks') {
         return false;
       }
-      if (build && app.options.verbose === 'build') {
+      if (build && verbose === 'build') {
         return false;
       }
-      if (app.options.silent === true) {
+
+      // if not `verbose`, handle `silent`
+      if (typeof silent === 'function') {
+        return silent(app, build, task);
+      }
+      if (typeof silent === 'string') {
+        silent = [silent];
+      }
+
+      if (build && Array.isArray(silent) && isMatch(silent, build.alias)) {
         return true;
       }
-      if (task && task.options.silent === true) {
+      if (task && Array.isArray(silent) && isMatch(silent, task.name)) {
+        return true;
+      }
+      if (silent === true) {
         return true;
       }
     }
@@ -81,14 +142,15 @@ module.exports = function(config) {
     }
 
     function namespace(build) {
-      return build.env ? build.env.namespace : build.namespace;
+      return build.env ? build.env.namespace : (build.namespace || build._name);
     }
 
     function toKey(namespace, name) {
       var res = '';
       if (namespace) {
-        namespace = stripDefault(namespace);
+        namespace = formatNamespace(namespace);
       }
+
       if (namespace && name) {
         res = utils.colors.bold(utils.colors.cyan(namespace)) + ':' + utils.colors.yellow(name);
 
@@ -105,19 +167,27 @@ module.exports = function(config) {
   };
 };
 
-function stripDefault(name) {
+function isMatch(name, val) {
+  return utils.mm(val, name).length !== 0;
+}
+
+function formatNamespace(name) {
   if (name.indexOf('default.') === 0) {
     return name.slice('default.'.length);
   }
-  return name;
-}
 
-function isValidInstance(app, fn) {
-  if (!utils.isValid(app)) {
-    return false;
+  var segs = name.split('.');
+  var len = segs.length;
+  var idx = -1
+  var res = [];
+
+  while (++idx < len) {
+    var next = segs[idx + 1];
+    var seg = segs[idx];
+    if (next && next === seg) {
+      continue;
+    }
+    res.push(seg);
   }
-  if (utils.isRegistered(app, 'base-runtimes', fn)) {
-    return false;
-  }
-  return true;
+  return res.join('.');
 }

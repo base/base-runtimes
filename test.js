@@ -27,8 +27,10 @@ describe('base-runtimes', function() {
     var count = 0;
     base = new Base();
     base.isApp = true;
-    base.on('plugin', function() {
-      count++;
+    base.on('plugin', function(name) {
+      if (name === 'base-runtimes') {
+        count++;
+      }
     });
 
     base.use(runtimes());
@@ -44,10 +46,7 @@ describe('base-runtimes', function() {
     });
 
     // run the `default` task
-    base.build('default', function(err) {
-      if (err) throw err;
-      cb();
-    });
+    base.build('default', cb);
   });
 
   it('should log `starting` for a build', function(cb) {
@@ -56,11 +55,14 @@ describe('base-runtimes', function() {
     var msgs = [];
 
     console.error = function(time, msg) {
-      msgs.push(msg);
-      count++;
+      if (msg === 'starting') {
+        msgs.push(msg);
+        count++;
+      }
     };
 
     base = new Base();
+
     base.isApp = true;
     base.use(task());
     base.use(runtimes());
@@ -73,7 +75,9 @@ describe('base-runtimes', function() {
       if (err) throw err;
       base.emit('done');
       assert.equal(msgs[0], 'starting');
-      assert.equal(count, 5);
+      assert.equal(msgs[1], 'starting');
+      assert.equal(count, 2);
+      console.error = error;
       cb();
     });
   });
@@ -101,7 +105,8 @@ describe('base-runtimes', function() {
       if (err) throw err;
       base.emit('done');
       assert.equal(msgs[1], 'starting');
-      assert.equal(count, 5);
+      assert.equal(count, 4);
+      console.error = error;
       cb();
     });
   });
@@ -128,7 +133,43 @@ describe('base-runtimes', function() {
     base.build(['default'], function(err) {
       if (err) throw err;
       base.emit('done');
-      assert.equal(count, 3);
+      assert.equal(count, 2);
+      console.error = error;
+      cb();
+    });
+  });
+
+  it('should not log for a task when `silent` equals the name of the task', function(cb) {
+    var error = console.error;
+    var count = 0;
+    var msgs = [];
+    var tasks = [];
+
+    console.error = function(time, msg) {
+      msgs.push(msg);
+      count++;
+    };
+
+    base = new Base();
+    base.isApp = true;
+    base.use(task());
+    base.use(runtimes());
+    base.task('default', {silent: 'default'}, function(next) {
+      tasks.push('default');
+      next();
+    });
+    base.task('foo', function(next) {
+      tasks.push('foo');
+      next();
+    });
+
+    // run the `default` task
+    base.build(['default', 'foo'], function(err) {
+      if (err) throw err;
+      base.emit('done');
+      assert.equal(tasks.length, 2);
+      assert.equal(count, 4);
+      console.error = error;
       cb();
     });
   });
@@ -155,7 +196,8 @@ describe('base-runtimes', function() {
     base.build(['default'], function(err) {
       if (err) throw err;
       base.emit('done');
-      assert.equal(count, 5);
+      assert.equal(count, 4);
+      console.error = error;
       cb();
     });
   });
@@ -183,7 +225,8 @@ describe('base-runtimes', function() {
       if (err) throw err;
       base.emit('done');
       assert.equal(msgs[2], 'finished');
-      assert.equal(count, 5);
+      assert.equal(count, 4);
+      console.error = error;
       cb();
     });
   });
@@ -211,35 +254,8 @@ describe('base-runtimes', function() {
       if (err) throw err;
       base.emit('done');
       assert.equal(msgs[3], 'finished');
-      assert.equal(count, 5);
-      cb();
-    });
-  });
-
-  it('should log `finished` when `done` is emitted', function(cb) {
-    var error = console.error;
-    var count = 0;
-    var msgs = [];
-
-    console.error = function(time, msg) {
-      msgs.push(msg);
-      count++;
-    };
-
-    base = new Base();
-    base.isApp = true;
-    base.use(task());
-    base.use(runtimes());
-    base.task('default', function(next) {
-      next();
-    });
-
-    // run the `default` task
-    base.build(function(err) {
-      if (err) throw err;
-      base.emit('done');
-      assert.equal(msgs[4], 'finished');
-      assert.equal(count, 5);
+      assert.equal(count, 4);
+      console.error = error;
       cb();
     });
   });
