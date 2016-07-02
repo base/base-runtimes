@@ -1,7 +1,7 @@
 {
   "name": "base-runtimes",
   "description": "Plugin for adding composer-runtimes to base applications, complementing the base-tasks and base-generators plugins.",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "homepage": "https://github.com/node-base/base-runtimes",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "node-base/base-runtimes",
